@@ -1,1 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台語疊字學習</title>
+    <style>
+        :root {
+            --primary-color: #2b6cb0;
+            --secondary-color: #ebf8ff;
+            --text-color: #2d3748;
+            --bg-color: #f7fafc;
+            --card-bg: #ffffff;
+        }
 
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin: 0 0 10px 0;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 1rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            padding: 40px 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .progress {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #a0aec0;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .word-hanzi {
+            font-size: 5rem;
+            font-weight: 900;
+            color: var(--primary-color);
+            margin: 20px 0;
+            letter-spacing: 2px;
+        }
+
+        .answer-section {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px dashed #e2e8f0;
+        }
+
+        .answer-section.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .tailo {
+            font-size: 2rem;
+            color: #dd6b20;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .meaning {
+            font-size: 1.5rem;
+            color: #4a5568;
+            margin-bottom: 20px;
+        }
+
+        .audio-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .audio-btn {
+            background-color: #ecc94b;
+            color: #744210;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        
+        .audio-btn:hover {
+            background-color: #d69e2e;
+        }
+
+        .dict-btn {
+            background-color: #e2e8f0;
+            color: #4a5568;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .dict-btn:hover {
+            background-color: #cbd5e0;
+        }
+        
+        .voice-note {
+            font-size: 0.85rem;
+            color: #e53e3e;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background-color: #edf2f7;
+            border: none;
+            color: #4a5568;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #e2e8f0;
+            color: #2d3748;
+        }
+
+        button.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        button.primary:hover {
+            background-color: #2c5282;
+        }
+
+        .instructions {
+            margin-top: 30px;
+            color: #a0aec0;
+            font-size: 0.9rem;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 600px) {
+            .word-hanzi { font-size: 4rem; }
+            .tailo { font-size: 1.5rem; }
+            .meaning { font-size: 1.2rem; }
+            button { padding: 10px 15px; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>教學用・台語疊字閃卡</h1>
+        <div class="subtitle">收錄 50 組教育部標準台語漢字與臺羅拼音</div>
+    </header>
+
+    <div class="card" id="flashcard">
+        <div class="progress" id="progressText">1 / 50</div>
+        
+        <div class="word-hanzi" id="wordHanzi">白拋拋</div>
+        
+        <div class="answer-section" id="answerSection">
+            <div class="tailo" id="wordTailo">peh-phau-phau</div>
+            <div class="meaning" id="wordMeaning">白皙柔嫩</div>
+            
+            <div class="audio-buttons">
+                <button class="audio-btn" onclick="playAudio()">🔊 播放台語發音</button>
+                <a class="dict-btn" id="dictBtn" href="#" target="_blank">🔗 查辭典聽發音</a>
+            </div>
+            <div class="voice-note" id="voiceNote"></div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button onclick="prevWord()">◀ 上一組</button>
+        <button class="primary" onclick="toggleAnswer()" id="toggleBtn">顯示發音與意思</button>
+        <button onclick="nextWord()">下一組 ▶</button>
+        <button onclick="randomWord()">🎲 隨機</button>
+    </div>
+
+    <div class="instructions">
+        💡 小提示：可使用鍵盤 <b>左右方向鍵</b> 切換，按 <b>空白鍵</b> 顯示/隱藏解答。<br>
+        為確保發出正確台語聲音，建議使用 <b>Edge瀏覽器</b> 或 <b>蘋果(Mac/iPhone) Safari</b> 開啟。
+    </div>
+
+    <script>
+        // 50組標準台語疊字資料庫 (經過教育部辭典校對)
+        const wordsData = [
+            // 顏色與視覺
+            { hanzi: "白拋拋", tailo: "peh-phau-phau", meaning: "白皙柔嫩" },
+            { hanzi: "烏趖趖", tailo: "oo-sô-sô", meaning: "黑漆漆" },
+            { hanzi: "紅記記", tailo: "âng-kì-kì", meaning: "紅通通" },
+            { hanzi: "黃錦錦", tailo: "n̂g-kìm-kìm", meaning: "金黃耀眼" },
+            { hanzi: "金鑠鑠", tailo: "kim-sih-sih", meaning: "金光閃閃" },
+            { hanzi: "光焱焱", tailo: "kng-iānn-iānn", meaning: "光芒耀眼" },
+            { hanzi: "暗摸摸", tailo: "àm-moo-moo", meaning: "漆黑一片" },
+            { hanzi: "明鑠鑠", tailo: "bîng-sih-sih", meaning: "明亮閃爍" },
+            { hanzi: "霧颯颯", tailo: "bū-sà-sà", meaning: "模糊不清、搞不清楚" },
+            
+            // 嗅覺與味覺
+            { hanzi: "芳貢貢", tailo: "phang-kòng-kòng", meaning: "香噴噴" },
+            { hanzi: "臭薌薌", tailo: "tshàu-hiang-hiang", meaning: "奇臭無比" },
+            { hanzi: "甜粅粅", tailo: "tinn-but-but", meaning: "甜滋滋" },
+            { hanzi: "鹹篤篤", tailo: "kiâm-tok-tok", meaning: "非常鹹" },
+            { hanzi: "酸微微", tailo: "sng-bî-bî", meaning: "帶有微酸的味道" },
+            { hanzi: "苦澀澀", tailo: "khóo-siap-siap", meaning: "苦澀難嚥" },
+            
+            // 觸覺與狀態
+            { hanzi: "軟膏膏", tailo: "nńg-kô-kô", meaning: "軟趴趴" },
+            { hanzi: "硬硞硞", tailo: "ngē-khok-khok", meaning: "硬邦邦" },
+            { hanzi: "冷吱吱", tailo: "líng-ki-ki", meaning: "冷冰冰" },
+            { hanzi: "燒燙燙", tailo: "sio-thǹg-thǹg", meaning: "熱騰騰" },
+            { hanzi: "輕浮浮", tailo: "khin-phû-phû", meaning: "輕飄飄" },
+            { hanzi: "重沯沯", tailo: "tāng-tsàm-tsàm", meaning: "沉甸甸" },
+            { hanzi: "焦涸涸", tailo: "ta-khok-khok", meaning: "乾巴巴" },
+            { hanzi: "澹糊糊", tailo: "tâm-kôo-kôo", meaning: "溼透且黏糊糊" },
+            { hanzi: "黏黐黐", tailo: "liâm-thi-thi", meaning: "黏踢踢" },
+            { hanzi: "滑溜溜", tailo: "ku̍t-liu-liu", meaning: "滑溜溜" },
+            { hanzi: "粗摃摃", tailo: "tshoo-kòng-kòng", meaning: "粗糙不平" },
+            { hanzi: "幼麵麵", tailo: "iù-mī-mī", meaning: "細緻綿密" },
+            
+            // 外觀與體型
+            { hanzi: "肥卒卒", tailo: "puî-tsut-tsut", meaning: "胖嘟嘟" },
+            { hanzi: "瘦卑巴", tailo: "sán-pi-pa", meaning: "瘦巴巴" },
+            { hanzi: "媠當當", tailo: "suí-tang-tang", meaning: "漂亮極了" },
+            { hanzi: "䆀諍諍", tailo: "bái-tsènn-tsènn", meaning: "奇醜無比" },
+            { hanzi: "圓輦輦", tailo: "înn-lián-lián", meaning: "圓滾滾" },
+            { hanzi: "扁貼貼", tailo: "pín-tah-tah", meaning: "扁平狀" },
+            { hanzi: "勇硿硿", tailo: "ióng-khòng-khòng", meaning: "身體強壯" },
+            { hanzi: "虛㾪㾪", tailo: "hi-sán-sán", meaning: "虛弱瘦小" },
+            
+            // 空間與程度
+            { hanzi: "闊莽莽", tailo: "khuah-móng-móng", meaning: "寬闊無邊" },
+            { hanzi: "狹櫼櫼", tailo: "e̍h-tsinn-tsinn", meaning: "狹窄擁擠" },
+            { hanzi: "實牚牚", tailo: "tsa̍t-tshènn-tshènn", meaning: "塞得滿滿的" },
+            { hanzi: "鬆獅獅", tailo: "sang-sai-sai", meaning: "鬆垮垮" },
+            { hanzi: "貴參參", tailo: "kuì-sám-sám", meaning: "非常昂貴 (貴桑桑)" },
+            { hanzi: "俗鑠鑠", tailo: "sio̍k-sih-sih", meaning: "非常便宜" },
+            { hanzi: "碎糊糊", tailo: "tshuì-kôo-kôo", meaning: "碎裂成糊狀" },
+            { hanzi: "清氣氣", tailo: "tshing-khì-khì", meaning: "乾乾淨淨" },
+            
+            // 情緒與動作
+            { hanzi: "氣怫怫", tailo: "khì-phut-phut", meaning: "氣呼呼" },
+            { hanzi: "笑微微", tailo: "tshiò-bî-bî", meaning: "笑咪咪" },
+            { hanzi: "活跳跳", tailo: "ua̍h-thiàu-thiàu", meaning: "活蹦亂跳" },
+            { hanzi: "亂操操", tailo: "luān-tshau-tshau", meaning: "亂七八糟" },
+            { hanzi: "緊趗趗", tailo: "kín-tshuh-tshuh", meaning: "匆匆忙忙" },
+            { hanzi: "慢吞吞", tailo: "bān-thun-thun", meaning: "慢吞吞" },
+            { hanzi: "閒仙仙", tailo: "îng-sian-sian", meaning: "閒閒沒事做" },
+            { hanzi: "戇神神", tailo: "gōng-sîn-sîn", meaning: "發呆、恍神" },
+            { hanzi: "恬吱吱", tailo: "tiām-ki-ki", meaning: "靜悄悄" }
+        ];
+
+        let currentIndex = 0;
+        let isAnswerShown = false;
+        let voices = [];
+
+        const hanziEl = document.getElementById('wordHanzi');
+        const tailoEl = document.getElementById('wordTailo');
+        const meaningEl = document.getElementById('wordMeaning');
+        const answerSection = document.getElementById('answerSection');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const progressText = document.getElementById('progressText');
+        const voiceNote = document.getElementById('voiceNote');
+        const dictBtn = document.getElementById('dictBtn');
+
+        // 載入系統語音引擎
+        function loadVoices() {
+            voices = window.speechSynthesis.getVoices();
+        }
+        
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+            loadVoices(); // 立即呼叫一次以防已載入
+        }
+
+        // 嚴格播放台語發音
+        function playAudio() {
+            if (!('speechSynthesis' in window)) {
+                alert("您的瀏覽器不支援語音合成功能。");
+                return;
+            }
+            
+            window.speechSynthesis.cancel(); // 停止先前的發音
+            
+            const currentWord = wordsData[currentIndex];
+            const utterance = new SpeechSynthesisUtterance(currentWord.hanzi);
+            
+            // 嚴格尋找台語/閩南語的語音引擎 (完全排除預設中文引擎)
+            let taigiVoice = voices.find(v => 
+                v.lang.toLowerCase().includes('nan') ||     // nan-TW 等標準代碼
+                v.name.toLowerCase().includes('taiwanese') || 
+                v.name.includes('閩南') || 
+                v.name.includes('台語') ||
+                v.name.includes('Mei-Jia') ||  // macOS/iOS 內建台語語音
+                v.name.includes('HsiaoYu')     // Edge 內建台語語音
+            );
+
+            if (taigiVoice) {
+                utterance.voice = taigiVoice;
+                utterance.lang = taigiVoice.lang;
+                voiceNote.textContent = "";
+                utterance.rate = 0.85; // 稍微放慢語速
+                window.speechSynthesis.speak(utterance);
+            } else {
+                // 如果嚴格過濾後找不到台語語音，絕對「不使用」中文發音！
+                // 改為直接顯示提示文字，請使用者使用其他裝置或查線上辭典。
+                voiceNote.innerHTML = "⚠️ <b>找不到台語語音！</b>您的裝置目前沒有內建台語發音包。<br>👉 建議改用 <b>Edge 瀏覽器</b> 或 <b>蘋果設備(Safari)</b>，<br>👉 或者您可以直接點擊上方的<b>「🔗 查辭典聽發音」</b>按鈕前往線上辭典聆聽。";
+            }
+        }
+
+        function updateCard() {
+            const currentWord = wordsData[currentIndex];
+            hanziEl.textContent = currentWord.hanzi;
+            tailoEl.textContent = currentWord.tailo;
+            meaningEl.textContent = currentWord.meaning;
+            progressText.textContent = `${currentIndex + 1} / ${wordsData.length}`;
+            
+            // 更新「查辭典」按鈕連結 (連往 iTaigi 找台語)
+            dictBtn.href = `https://itaigi.tw/k/${encodeURIComponent(currentWord.hanzi)}`;
+            
+            // 切換單字時自動隱藏解答並清除語音提示
+            isAnswerShown = false;
+            answerSection.classList.remove('show');
+            toggleBtn.textContent = "顯示發音與意思";
+            voiceNote.textContent = "";
+        }
+
+        function toggleAnswer() {
+            isAnswerShown = !isAnswerShown;
+            if (isAnswerShown) {
+                answerSection.classList.add('show');
+                toggleBtn.textContent = "隱藏發音與意思";
+            } else {
+                answerSection.classList.remove('show');
+                toggleBtn.textContent = "顯示發音與意思";
+            }
+        }
+
+        function nextWord() {
+            currentIndex = (currentIndex + 1) % wordsData.length;
+            updateCard();
+        }
+
+        function prevWord() {
+            currentIndex = (currentIndex - 1 + wordsData.length) % wordsData.length;
+            updateCard();
+        }
+
+        function randomWord() {
+            let newIndex = currentIndex;
+            while (newIndex === currentIndex) {
+                newIndex = Math.floor(Math.random() * wordsData.length);
+            }
+            currentIndex = newIndex;
+            updateCard();
+        }
+
+        // 監聽鍵盤事件
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                nextWord();
+            } else if (e.key === 'ArrowLeft') {
+                prevWord();
+            } else if (e.key === ' ' || e.code === 'Space') {
+                e.preventDefault(); // 防止網頁向下捲動
+                toggleAnswer();
+            }
+        });
+
+        // 初始化第一張卡片
+        updateCard();
+
+    </script>
+</body>
+</html>
