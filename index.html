@@ -4,19 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>台語疊字學習</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #2b6cb0;
-            --secondary-color: #ebf8ff;
-            --text-color: #2d3748;
-            --bg-color: #f7fafc;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --accent: #ec4899;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
         }
 
         body {
-            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -25,6 +29,7 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
         }
 
         header {
@@ -33,216 +38,370 @@
         }
 
         h1 {
-            color: var(--primary-color);
-            margin: 0 0 10px 0;
-            font-size: 2rem;
+            color: var(--primary);
+            margin: 0 0 8px 0;
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            font-weight: 900;
+            letter-spacing: 1px;
         }
 
         .subtitle {
-            color: #718096;
+            color: var(--text-muted);
             font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .designer-info {
+            display: inline-block;
+            background-color: rgba(255,255,255,0.6);
+            padding: 4px 12px;
+            border-radius: 20px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 10px;
+            font-weight: 700;
         }
 
         .card {
             background-color: var(--card-bg);
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-radius: 32px;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1), 0 10px 20px -5px rgba(0, 0, 0, 0.05);
             width: 100%;
             max-width: 600px;
-            padding: 40px 20px;
+            padding: 50px 30px;
             text-align: center;
-            transition: transform 0.3s ease;
             position: relative;
+            overflow: hidden;
+        }
+
+        .card-content {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .card-content.fade {
+            opacity: 0;
+            transform: scale(0.95);
         }
 
         .progress {
             position: absolute;
-            top: 15px;
-            right: 20px;
-            color: #a0aec0;
+            top: 25px;
+            right: 30px;
+            background: #f3f4f6;
+            padding: 6px 14px;
+            border-radius: 20px;
+            color: var(--text-muted);
             font-size: 0.9rem;
-            font-weight: bold;
+            font-weight: 700;
         }
 
         .word-hanzi {
-            font-size: 5rem;
+            font-size: clamp(3.5rem, 10vw, 5.5rem);
             font-weight: 900;
-            color: var(--primary-color);
-            margin: 20px 0;
-            letter-spacing: 2px;
+            color: var(--text-main);
+            margin: 30px 0;
+            letter-spacing: 4px;
+            text-shadow: 2px 2px 0px #f3f4f6;
         }
 
         .answer-section {
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: all 0.3s ease;
-            margin-top: 30px;
-            padding-top: 30px;
-            border-top: 2px dashed #e2e8f0;
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .answer-section.show {
+            grid-template-rows: 1fr;
+        }
+
+        .answer-inner {
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            transition-delay: 0s;
+        }
+
+        .answer-section.show .answer-inner {
             opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+            transition-delay: 0.2s;
+            padding-top: 20px;
+            margin-top: 20px;
+            border-top: 2px dashed var(--border-color);
         }
 
         .tailo {
-            font-size: 2rem;
-            color: #dd6b20;
-            font-weight: bold;
-            margin-bottom: 15px;
+            font-size: clamp(1.8rem, 6vw, 2.5rem);
+            color: var(--accent);
+            font-weight: 900;
+            margin-bottom: 10px;
         }
 
         .meaning {
-            font-size: 1.5rem;
-            color: #4a5568;
-            margin-bottom: 20px;
-        }
-
-        .audio-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-        }
-
-        .audio-btn {
-            background-color: #ecc94b;
-            color: #744210;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-        
-        .audio-btn:hover {
-            background-color: #d69e2e;
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 25px;
         }
 
         .dict-btn {
-            background-color: #e2e8f0;
-            color: #4a5568;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
+            background-color: #f3f4f6;
+            color: var(--text-main);
+            border: 2px solid transparent;
+            padding: 10px 24px;
+            border-radius: 999px;
             font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            font-weight: bold;
-            text-decoration: none;
-            transition: background-color 0.2s;
+            gap: 8px;
         }
 
         .dict-btn:hover {
-            background-color: #cbd5e0;
-        }
-        
-        .voice-note {
-            font-size: 0.85rem;
-            color: #e53e3e;
-            margin-bottom: 15px;
-            line-height: 1.5;
+            background-color: white;
+            border-color: #d1d5db;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
         .controls {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-top: 30px;
+            gap: 12px;
+            margin-top: 40px;
             flex-wrap: wrap;
+            width: 100%;
+            max-width: 700px;
         }
 
-        button {
-            background-color: #edf2f7;
+        .btn {
+            background-color: white;
             border: none;
-            color: #4a5568;
-            padding: 12px 24px;
+            color: var(--text-main);
+            padding: 14px 24px;
             font-size: 1.1rem;
-            border-radius: 10px;
+            border-radius: 999px;
             cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s ease;
+            font-weight: 700;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        button:hover {
-            background-color: #e2e8f0;
-            color: #2d3748;
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            color: var(--primary);
         }
 
-        button.primary {
-            background-color: var(--primary-color);
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            color: white;
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-overview {
+            background-color: #10b981;
+            color: white;
+        }
+        .btn-overview:hover {
+            background-color: #059669;
             color: white;
         }
 
-        button.primary:hover {
-            background-color: #2c5282;
+        .instructions {
+            margin-top: 40px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            text-align: center;
+            line-height: 1.8;
+            background: rgba(255,255,255,0.5);
+            padding: 15px 25px;
+            border-radius: 16px;
         }
 
-        .instructions {
+        kbd {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 0.85em;
+            box-shadow: 0 2px 0 var(--border-color);
+            font-family: inherit;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+
+        /* Modal (總覽) */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(17, 24, 39, 0.4);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: white;
+            width: 90%;
+            max-width: 800px;
+            max-height: 85vh;
+            border-radius: 24px;
+            padding: 40px 30px;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            background: #f3f4f6;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+
+        .close-modal:hover {
+            background: #e5e7eb;
+            color: var(--text-main);
+            transform: rotate(90deg);
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
             margin-top: 30px;
-            color: #a0aec0;
-            font-size: 0.9rem;
+        }
+
+        .overview-item {
+            background-color: white;
+            border: 2px solid #f3f4f6;
+            padding: 15px 10px;
+            border-radius: 16px;
             text-align: center;
-            line-height: 1.6;
+            cursor: pointer;
+            font-weight: 900;
+            transition: all 0.2s;
+            font-size: 1.2rem;
+            color: var(--text-main);
+        }
+
+        .overview-item:hover {
+            border-color: var(--primary);
+            background-color: #f5f3ff;
+            color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
         }
 
         @media (max-width: 600px) {
-            .word-hanzi { font-size: 4rem; }
-            .tailo { font-size: 1.5rem; }
-            .meaning { font-size: 1.2rem; }
-            button { padding: 10px 15px; font-size: 1rem; }
+            .card { padding: 40px 20px; border-radius: 24px; }
+            .controls { gap: 10px; }
+            .btn { padding: 12px 16px; font-size: 1rem; flex: 1 1 40%; justify-content: center; }
+            .btn-primary { flex: 1 1 100%; order: -1; margin-bottom: 5px; padding: 16px; }
+            .instructions { padding: 15px; text-align: left; }
+            .modal-content { padding: 30px 20px; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>教學用・台語疊字閃卡</h1>
-        <div class="subtitle">收錄 50 組教育部標準台語漢字與臺羅拼音</div>
+        <h1>台語疊字學習閃卡</h1>
+        <div class="subtitle">收錄 50 組教育部標準漢字與拼音</div>
+        <div class="designer-info">🧑‍🏫 設計者：鍾孟修 職能治療師</div>
     </header>
 
     <div class="card" id="flashcard">
         <div class="progress" id="progressText">1 / 50</div>
         
-        <div class="word-hanzi" id="wordHanzi">白拋拋</div>
-        
-        <div class="answer-section" id="answerSection">
-            <div class="tailo" id="wordTailo">peh-phau-phau</div>
-            <div class="meaning" id="wordMeaning">白皙柔嫩</div>
+        <div class="card-content" id="cardContent">
+            <div class="word-hanzi" id="wordHanzi">白拋拋</div>
             
-            <div class="audio-buttons">
-                <button class="audio-btn" onclick="playAudio()">🔊 播放台語發音</button>
-                <a class="dict-btn" id="dictBtn" href="#" target="_blank">🔗 查辭典聽發音</a>
+            <div class="answer-section" id="answerSection">
+                <div class="answer-inner">
+                    <div class="tailo" id="wordTailo">peh-phau-phau</div>
+                    <div class="meaning" id="wordMeaning">白皙柔嫩</div>
+                    <a class="dict-btn" id="dictBtn" href="#" target="_blank">🔗 iTaigi 愛台語 (聽發音)</a>
+                </div>
             </div>
-            <div class="voice-note" id="voiceNote"></div>
         </div>
     </div>
 
     <div class="controls">
-        <button onclick="prevWord()">◀ 上一組</button>
-        <button class="primary" onclick="toggleAnswer()" id="toggleBtn">顯示發音與意思</button>
-        <button onclick="nextWord()">下一組 ▶</button>
-        <button onclick="randomWord()">🎲 隨機</button>
+        <button class="btn btn-primary" onclick="toggleAnswer()" id="toggleBtn">👀 顯示發音與意思</button>
+        <button class="btn" onclick="prevWord()">◀ 上一個</button>
+        <button class="btn" onclick="nextWord()">下一個 ▶</button>
+        <button class="btn" onclick="randomWord()">🎲 隨機</button>
+        <button class="btn btn-overview" onclick="openOverview()">📋 總覽全部</button>
     </div>
 
     <div class="instructions">
-        💡 小提示：可使用鍵盤 <b>左右方向鍵</b> 切換，按 <b>空白鍵</b> 顯示/隱藏解答。<br>
-        為確保發出正確台語聲音，建議使用 <b>Edge瀏覽器</b> 或 <b>蘋果(Mac/iPhone) Safari</b> 開啟。
+        💡 <b>操作小提示：</b><br>
+        • 使用鍵盤 <kbd>◀</kbd> <kbd>▶</kbd> 方向鍵切換上下題。<br>
+        • 按下 <kbd>空白鍵</kbd> 可快速顯示或隱藏解答。
+    </div>
+
+    <!-- 總覽 Modal -->
+    <div class="modal-overlay" id="overviewModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeOverview()">✖</span>
+            <h2 style="margin-top: 0; color: var(--primary);">台語疊字總覽 (50組)</h2>
+            <div class="overview-grid" id="overviewGrid">
+                <!-- 動態生成總覽按鈕 -->
+            </div>
+        </div>
     </div>
 
     <script>
-        // 50組標準台語疊字資料庫 (經過教育部辭典校對)
+        // 50組標準台語疊字資料庫 (經過教育部辭典校對，並優化以符合 iTaigi 搜尋)
         const wordsData = [
             // 顏色與視覺
             { hanzi: "白拋拋", tailo: "peh-phau-phau", meaning: "白皙柔嫩" },
@@ -252,7 +411,7 @@
             { hanzi: "金鑠鑠", tailo: "kim-sih-sih", meaning: "金光閃閃" },
             { hanzi: "光焱焱", tailo: "kng-iānn-iānn", meaning: "光芒耀眼" },
             { hanzi: "暗摸摸", tailo: "àm-moo-moo", meaning: "漆黑一片" },
-            { hanzi: "明鑠鑠", tailo: "bîng-sih-sih", meaning: "明亮閃爍" },
+            { hanzi: "青恂恂", tailo: "tshenn-sún-sún", meaning: "臉色發青" },
             { hanzi: "霧颯颯", tailo: "bū-sà-sà", meaning: "模糊不清、搞不清楚" },
             
             // 嗅覺與味覺
@@ -269,7 +428,7 @@
             { hanzi: "冷吱吱", tailo: "líng-ki-ki", meaning: "冷冰冰" },
             { hanzi: "燒燙燙", tailo: "sio-thǹg-thǹg", meaning: "熱騰騰" },
             { hanzi: "輕浮浮", tailo: "khin-phû-phû", meaning: "輕飄飄" },
-            { hanzi: "重沯沯", tailo: "tāng-tsàm-tsàm", meaning: "沉甸甸" },
+            { hanzi: "空硿硿", tailo: "khang-khong-khong", meaning: "空蕩蕩" },
             { hanzi: "焦涸涸", tailo: "ta-khok-khok", meaning: "乾巴巴" },
             { hanzi: "澹糊糊", tailo: "tâm-kôo-kôo", meaning: "溼透且黏糊糊" },
             { hanzi: "黏黐黐", tailo: "liâm-thi-thi", meaning: "黏踢踢" },
@@ -290,7 +449,7 @@
             // 空間與程度
             { hanzi: "闊莽莽", tailo: "khuah-móng-móng", meaning: "寬闊無邊" },
             { hanzi: "狹櫼櫼", tailo: "e̍h-tsinn-tsinn", meaning: "狹窄擁擠" },
-            { hanzi: "實牚牚", tailo: "tsa̍t-tshènn-tshènn", meaning: "塞得滿滿的" },
+            { hanzi: "滿滇滇", tailo: "muá-tīnn-tīnn", meaning: "滿滿的" },
             { hanzi: "鬆獅獅", tailo: "sang-sai-sai", meaning: "鬆垮垮" },
             { hanzi: "貴參參", tailo: "kuì-sám-sám", meaning: "非常昂貴 (貴桑桑)" },
             { hanzi: "俗鑠鑠", tailo: "sio̍k-sih-sih", meaning: "非常便宜" },
@@ -311,87 +470,50 @@
 
         let currentIndex = 0;
         let isAnswerShown = false;
-        let voices = [];
 
+        const cardContentEl = document.getElementById('cardContent');
         const hanziEl = document.getElementById('wordHanzi');
         const tailoEl = document.getElementById('wordTailo');
         const meaningEl = document.getElementById('wordMeaning');
         const answerSection = document.getElementById('answerSection');
         const toggleBtn = document.getElementById('toggleBtn');
         const progressText = document.getElementById('progressText');
-        const voiceNote = document.getElementById('voiceNote');
         const dictBtn = document.getElementById('dictBtn');
-
-        // 載入系統語音引擎
-        function loadVoices() {
-            voices = window.speechSynthesis.getVoices();
-        }
-        
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = loadVoices;
-            loadVoices(); // 立即呼叫一次以防已載入
-        }
-
-        // 嚴格播放台語發音
-        function playAudio() {
-            if (!('speechSynthesis' in window)) {
-                alert("您的瀏覽器不支援語音合成功能。");
-                return;
-            }
-            
-            window.speechSynthesis.cancel(); // 停止先前的發音
-            
-            const currentWord = wordsData[currentIndex];
-            const utterance = new SpeechSynthesisUtterance(currentWord.hanzi);
-            
-            // 嚴格尋找台語/閩南語的語音引擎 (完全排除預設中文引擎)
-            let taigiVoice = voices.find(v => 
-                v.lang.toLowerCase().includes('nan') ||     // nan-TW 等標準代碼
-                v.name.toLowerCase().includes('taiwanese') || 
-                v.name.includes('閩南') || 
-                v.name.includes('台語') ||
-                v.name.includes('Mei-Jia') ||  // macOS/iOS 內建台語語音
-                v.name.includes('HsiaoYu')     // Edge 內建台語語音
-            );
-
-            if (taigiVoice) {
-                utterance.voice = taigiVoice;
-                utterance.lang = taigiVoice.lang;
-                voiceNote.textContent = "";
-                utterance.rate = 0.85; // 稍微放慢語速
-                window.speechSynthesis.speak(utterance);
-            } else {
-                // 如果嚴格過濾後找不到台語語音，絕對「不使用」中文發音！
-                // 改為直接顯示提示文字，請使用者使用其他裝置或查線上辭典。
-                voiceNote.innerHTML = "⚠️ <b>找不到台語語音！</b>您的裝置目前沒有內建台語發音包。<br>👉 建議改用 <b>Edge 瀏覽器</b> 或 <b>蘋果設備(Safari)</b>，<br>👉 或者您可以直接點擊上方的<b>「🔗 查辭典聽發音」</b>按鈕前往線上辭典聆聽。";
-            }
-        }
+        const overviewModal = document.getElementById('overviewModal');
+        const overviewGrid = document.getElementById('overviewGrid');
 
         function updateCard() {
-            const currentWord = wordsData[currentIndex];
-            hanziEl.textContent = currentWord.hanzi;
-            tailoEl.textContent = currentWord.tailo;
-            meaningEl.textContent = currentWord.meaning;
-            progressText.textContent = `${currentIndex + 1} / ${wordsData.length}`;
+            // 加入淡出動畫
+            cardContentEl.classList.add('fade');
             
-            // 更新「查辭典」按鈕連結 (連往 iTaigi 找台語)
-            dictBtn.href = `https://itaigi.tw/k/${encodeURIComponent(currentWord.hanzi)}`;
-            
-            // 切換單字時自動隱藏解答並清除語音提示
-            isAnswerShown = false;
-            answerSection.classList.remove('show');
-            toggleBtn.textContent = "顯示發音與意思";
-            voiceNote.textContent = "";
+            setTimeout(() => {
+                const currentWord = wordsData[currentIndex];
+                hanziEl.textContent = currentWord.hanzi;
+                tailoEl.textContent = currentWord.tailo;
+                meaningEl.textContent = currentWord.meaning;
+                progressText.textContent = `${currentIndex + 1} / ${wordsData.length}`;
+                
+                // 更新「查辭典」按鈕連結 (連往 iTaigi 愛台語)
+                dictBtn.href = `https://itaigi.tw/k/${encodeURIComponent(currentWord.hanzi)}`;
+                
+                // 切換單字時自動隱藏解答
+                isAnswerShown = false;
+                answerSection.classList.remove('show');
+                toggleBtn.textContent = "👀 顯示發音與意思";
+
+                // 淡入動畫
+                cardContentEl.classList.remove('fade');
+            }, 200); // 等待淡出完成後更新內容
         }
 
         function toggleAnswer() {
             isAnswerShown = !isAnswerShown;
             if (isAnswerShown) {
                 answerSection.classList.add('show');
-                toggleBtn.textContent = "隱藏發音與意思";
+                toggleBtn.textContent = "🙈 隱藏發音與意思";
             } else {
                 answerSection.classList.remove('show');
-                toggleBtn.textContent = "顯示發音與意思";
+                toggleBtn.textContent = "👀 顯示發音與意思";
             }
         }
 
@@ -414,8 +536,42 @@
             updateCard();
         }
 
+        // 總覽功能
+        function renderOverview() {
+            overviewGrid.innerHTML = '';
+            wordsData.forEach((word, index) => {
+                const btn = document.createElement('div');
+                btn.className = 'overview-item';
+                btn.textContent = word.hanzi;
+                btn.onclick = () => {
+                    currentIndex = index;
+                    updateCard();
+                    closeOverview();
+                };
+                overviewGrid.appendChild(btn);
+            });
+        }
+
+        function openOverview() {
+            overviewModal.classList.add('show');
+        }
+
+        function closeOverview() {
+            overviewModal.classList.remove('show');
+        }
+
+        // 點擊 Modal 外圍可關閉
+        window.onclick = function(event) {
+            if (event.target == overviewModal) {
+                closeOverview();
+            }
+        }
+
         // 監聽鍵盤事件
         document.addEventListener('keydown', (e) => {
+            // 如果總覽彈窗開啟時，不觸發左右切換
+            if (overviewModal.classList.contains('show')) return;
+
             if (e.key === 'ArrowRight') {
                 nextWord();
             } else if (e.key === 'ArrowLeft') {
@@ -426,8 +582,9 @@
             }
         });
 
-        // 初始化第一張卡片
+        // 初始化
         updateCard();
+        renderOverview();
 
     </script>
 </body>
